@@ -1,0 +1,31 @@
+★lock仕様
+1 LOCK TABLES PlayerLock write;
+2 UPDATE PlayerLock set value=1, owner=1 where id=1 and value=0;
+3 SELECT * from PlayerLock where id=1;
+4 UNLOCK TABLES;
+
+3で、 ownerが自分が指定した1だったら、成功、ownerが別のサーバIDだったら失敗。
+
+
+db_proto::send_setLockIf( id=1, owner=1, value=1, ifvalue=0 )
+db_proto::recv_setLockIfResult( id=1, owner=1, value=1 )
+
+Fieldに setIf = Trueを追加して、それが1個あったら、（2個以上には対応しない）
+関数を
+send_putIf_Player( db_proto::Player p, vce::VUint32 typeID );
+という関数を増やし、この関数の中では、 LOCK/UNLOCKを行う。
+
+tbl.add( Field( name="typeID", type="dword" , setIf=True ))
+
+
+
+ - seamless仕様
+  - send_viewmode( floorID, x, y )を定期的に送る
+  - notify()関数で pcがないとき、 viewがセットされてたらそのセッションには送る:dnoe
+   「認証なしで移動情報だけもらえる」がidiom
+  - ログイン時点で位置を修正する. もし領域の外であったとしても、１セルの違いだったら周囲４個のセルを
+検索して、自分のＩＤのところがあったら座標を変更してログインさせる。
+次のところに移動させてログアウトしたらデッドロックにおちいる可能性がある。
+  - logoutを呼ぶ
+  
+

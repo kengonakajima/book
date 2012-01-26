@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<gen>
+  <protocol name="j_proto">
+    <config source="jproto.cpp" header="jproto.h" debuglog="true" purevirtual="true" />
+
+
+	<!-- 可動物同期のための値 -->
+	
+	<!--------------------------------------------------------------------->
+	
+    <!--ping (guest to host) -->
+    <method methname="ping" prflow="c2s">
+      <param prtype="qword" prname="guestclock" /> <!-- guestのタイマの値 -->
+    </method>
+	<method methname="pong" prflow="s2c">
+	  <param prtype="qword" prname="hostclock" /> <!-- hostのタイマの値 -->
+	  <param prtype="qword" prname="guestclock" /> <!-- guestのタイマの値 -->
+	</method>
+
+	<!-- id generatorにアクセスする -->
+	<method methname="getid" prflow="c2s" >
+	  <param prtype="word" prname="num" />
+	</method>
+	<method methname="getid_result" prflow="s2c" >
+	  <param prtype="qword" prname="idarray" prlength="1000" prvariable="true" /> <!-- 確保した新しいIDの配列。numに100を指定したら100個返ってくる -->
+	</method>
+	
+
+	<!-- guestIDの通知 -->
+    <method methname="guestinfo" prflow="s2c">
+      <param prtype="dword" prname="id" /> <!-- guestのID hostが0で、後から参加するクライアントはvce sessionのhostからみたuID -->
+    </method>	
+	  
+    <!--movable 可動物が変化したことの通知 -->
+    <method methname="sync" prflow="p2p" >
+	  <param prtype="dword" prname="guestid" />
+	  <param prtype="dword" prname="id" />
+      <param prtype="byte" prname="data" prlength="200" prvariable="true" />
+    </method>
+
+	<!-- delete 可動物が消えたことの通知 -->
+    <method methname="delete" prflow="p2p" >
+	  <param prtype="dword" prname="guestid" />	  
+      <param prtype="dword" prname="id" /> <!-- Movableのid -->
+    </method>
+
+
+
+  </protocol>
+</gen>

@@ -1,0 +1,49 @@
+
+
+- 問題：同じIDのキャラが境界の両側にいる場合がある。
+これに対処するには、「どっちのサーバから来たのか」をmovにuIDで教えておいて、
+moveやdisappearするときに、異なるuIDの奴を処理対象にしなければよい。
+mapの第1引数を64bitにすればよい。
+
+  
+------------------------------------------------------------
+* ./locktest
+目的: setIfのテスト
+複数セッションで同時にプロトコルを発行しても大丈夫か
+dbcliは汎用テスト（テーブルの中身によらない）なので、
+lockのテストはgmsv側でやらねばならない。
+
+
+
+
+
+* lockの組み込み
+k.xmlに
+getLock　を追加する。
+recv_getLock( )
+  db::send_put_PlayerLock_if_state
+db::recv_put_PlayerLock_if_state
+  send_getLockResult()
+
+logoutでsavePlayerの後に put_lock  
+
+* cookieで切り替えコストの節減
+
+* autocli: テストを成功ぽいメッセージだす
+
+* 回線切断した後もキャラクターが10秒間残る
+* 遅れてchar保存 (itri) save()をsaveAt　にする
+
+* 残りプロトコル実装
+ * useItem 
+ * useskill
+ * shop
+ * buy
+ * sell
+
+* メモリ管理にpoolを使うようにする
+* dbsvにkeepaliveを実装する
+* gmsv: dbsv死んだら自分も死ぬ(itriのコピ)
+
+* smart pointer使えるところに導入する
+ * あるのかな

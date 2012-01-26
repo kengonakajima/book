@@ -1,0 +1,28 @@
+* 物理攻撃を追加する。:done
+* 敵の動きを修正：PCを追いかけるように変える:done
+  
+-----
+* ネットワーク実装 : done (4055)
+* refactor : done
+* 毎フレーム位置を送ってみる:done
+* guestはgetNewIDは常にプールから取るようにする。:done
+
+ * Enemy
+  * Create: host -> guest (sync, ALL) :done
+  * Move:
+   * target送る: done
+   * targetあり: guest完結 : done
+   * targetなし: host -> guest (sync, coord): done
+   * targetする: guest -> host -> guest (sync, targetID)  done
+  * Delete: [ guestAttackKill -> ] hostKill -> guestKill (sync)
+   * host->guest : done
+   * guest->host->guest : done
+ * PlayerCharacter
+  * Create, Move, Delete: [ guest -> ] host -> guest (sync ALL)
+   * h->g : done
+   * g->h->g : done
+ * Bullet : done
+  * Create, Move, Delete: guest -> host -> guest (syncだけど同じhost内だけ効果あり)
+ * attack : done
+
+bug: guestがうってもhostで見えない

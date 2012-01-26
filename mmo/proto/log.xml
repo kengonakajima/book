@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<gen>
+  <protocol name="log_proto">
+    <config source="logproto.cpp" header="logproto.h" debuglog="true" />
+
+    <!--ping-->
+    <method methname="ping">
+      <param prtype="string" prname="data" prlength="50"/>
+    </method>	
+	
+    <!-- putLog : LOGSVに対してログを書き込む -->
+    <method methname="putLog">
+      <param prtype="string" prname="text" prlength="2000" />
+    </method>
+	
+
+  </protocol>
+</gen>

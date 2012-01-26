@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<gen>
+  <protocol name="k_proto">
+    <config source="kproto.cpp" header="kproto.h" debuglog="true" purevirtual="true" />
+
+	<enum enumname="ResultCode">
+	  <num numname="FAIL" numvalue="0" /> <!-- メソッド呼び出しに失敗した。 -->
+	  <num numname="NONE" numvalue="0" /> <!-- 検索結果は存在しない。 -->
+	  <num numname="SUCCESS" numvalue="1" /> <!-- メソッド呼び出しに成功した。 -->
+	  <num numname="ALREADY" numvalue="2" /> <!-- 1回しかできない事が、すでに実行されているので、失敗した。-->
+	  <num numname="NEEDMOREENERGY" numvalue="3" /> <!-- 何かをするにはエナジーが足りない。 -->
+	  <num numname="TOOLONG" numvalue="4" />	   <!-- 最大3人の設定のとき、4人目はむり -->
+	  <num numname="NOTLOADED" numvalue="5" />	   <!-- (キャラクターが）まだロードされていない（ので、ログインできない） listCharacterを成功させておくこと -->	  
+	</enum>
+
+	<!-- スキル -->
+	<enum enumname="SkillType" prefix="SKILL_" > <!-- enumを複数定義してビルド時にエラーを未然に防ごうとするのはidiom -->
+	  <num numname="CUTTREE" numvalue="1" />
+	  <num numname="PUTFIRE" numvalue="2" />	   	  
+	</enum>
+
+
+	
+	<!-- 地形の種類 -->
+	<enum enumname="TileType" prefix="TILE_" >
+	  <num numname="MIN" numvalue="1" />	   <!-- ID空間を分けるのはidiom -->
+	  <num numname="SAND" numvalue="1" />
+	  <num numname="GRASS" numvalue="2" />
+  	  <num numname="WATER" numvalue="3" />
+  	  <num numname="ROCK" numvalue="4" />
+   	  <num numname="LAVA" numvalue="5" />
+  	  <num numname="UPSTAIR" numvalue="6" />
+  	  <num numname="DOWNSTAIR" numvalue="7" />
+  	  <num numname="MAX" numvalue="49" />	   	  	  	  	  
+	</enum>
+	
+	<!-- アイテム -->
+	<enum enumname="ItemType" prefix="ITEM_" >
+	  <num numname="NONE" numvalue="0" />
+	  <num numname="MIN" numvalue="50" /> <!-- MIN, MAXはidiom -->
+	  <num numname="SHORTSWORD" numvalue="50" />	  	  
+	  <num numname="LONGSWORD" numvalue="51" />
+	  <num numname="MAX" numvalue="99" />	  
+	</enum>
+
+	<!-- 可動物の種類 -->
+	<enum enumname="MovableType" prefix="MOVABLE_" >
+	  <num numname="NONE" numvalue="0" />	  
+	  <num numname="MIN" numvalue="100" />
+	  <num numname="HUMAN" numvalue="100" />	  
+	  <num numname="GOBLIN" numvalue="101" />
+	  <num numname="RAT" numvalue="102" />
+	  <num numname="TREE" numvalue="103" />
+  	  <num numname="MAX" numvalue="199" />	  	  
+	</enum>	
+
+	<!-- エフェクト（一時的な効果)の種類 -->
+	<enum enumname="EffectType" prefix="EFFECT_" >
+  	  <num numname="MIN" numvalue="200" />
+  	  <num numname="ATTACK" numvalue="200" />
+  	  <num numname="MAX" numvalue="299" />	  
+	</enum>		  
+	
+	<!-- ▼struct PlayerProfile: 各プレイヤの詳しい情報を伝える  -->
+	<struct strctname="CharacterStatus">
+	  <member mbtype="string" mbname="name" mblength="50" /> 
+	  <member mbtype="dword" mbname="hp" />
+	  <member mbtype="dword" mbname="maxhp" />	  
+	  <member mbtype="dword" mbname="level" />
+	  <member mbtype="dword" mbname="exp" />
+	  <member mbtype="dword" mbname="mapID" />
+	  <member mbtype="dword" mbname="x" />
+	  <member mbtype="dword" mbname="y" />
+	</struct>
+
+
+	
+	<!--------------------------------------------------------------------->
+    <!--ping-->
+    <method methname="ping" prflow="p2p"> <!-- タイマの値を入れるidiom -->
+      <param prtype="qword" prname="timestamp" />
+    </method>
+
+    <method methname="signup" prflow="c2s" >
+      <param prtype="string" prname="accountname" prlength="100" />
+      <param prtype="string" prname="password" prlength="100" />	  	  
+    </method>
+    <method methname="signupResult" prflow="s2c" >
+      <param prtype="ResultCode" prname="result" />	  	  
+    </method>
+	
+    <!--認証 -->
+    <method methname="authentication" prflow="c2s" >
+      <param prtype="string" prname="accountname" prlength="100" />
+      <param prtype="string" prname="password" prlength="100" />	  
+    </method>
+    <method methname="authenticationResult" prflow="s2c" >
+      <param prtype="ResultCode" prname="result" />	  	  
+    </method>
+
+    <method methname="viewmode" prflow="c2s" >
+      <param prtype="dword" prname="floorID"  />
+      <param prtype="dword" prname="x"  />
+      <param prtype="dword" prname="y"  />
+      <param prtype="byte" prname="mode"  />	  	   <!-- 0/1 -->
+    </method>
+    <method methname="viewmodeResult" prflow="s2c" >
+      <param prtype="ResultCode" prname="result" />	  	  
+    </method>
+
+	
+	<!-- キャラリスト -->
+    <method methname="listCharacter" prflow="c2s" >
+    </method>
+    <method methname="listCharacterResult" prflow="s2c" >
+      <param prtype="ResultCode" prname="result" />
+	  <param prtype="CharacterStatus" prname="stat" prlength="100" prvariable="true" />
+    </method>
+	
+    <!-- キャラ作成 -->
+    <!-- ゲームロジック：名前以外はサーバで自動生成される -->
+    <method methname="createCharacter" prflow="c2s" >
+      <param prtype="string" prname="characterName" prlength="100" />	  	  
+    </method> 
+    <method methname="createCharacterResult" prflow="s2c" >
+      <param prtype="ResultCode" prname="result" />	  	  
+    </method>
+
+	
+    <!-- キャラクターログイン -->
+    <method methname="login" prflow="c2s" >
+      <param prtype="string" prname="characterName" prlength="100" />	  	  
+    </method>
+    <method methname="loginResult" prflow="s2c" >
+      <param prtype="ResultCode" prname="result" />
+      <param prtype="dword" prname="movableID" />	<!-- ログインしたキャラクターの可動物ID -->
+    </method>
+
+	<!-- ログアウト 。サーバはこれを受信したらすぐキャラ保存して切断する -->
+	<method methname="logout" prflow="c2s" >
+    </method>	
+
+    <!--chat チャットで発言をする -->
+    <method methname="chat" prflow="c2s" >
+      <param prtype="string" prname="text" prlength="2000" />
+    </method>
+    <!--chatNotify 他の可動物がチャットで発言したことの通知 -->
+    <method methname="chatNotify" prflow="s2c" >
+      <param prtype="int" prname="talkerID" />
+      <param prtype="string" prname="name" prlength="1000" />
+      <param prtype="string" prname="text" prlength="1000" />
+    </method>
+
+    <!--move キャラクターを移動させることの要求 -->
+    <method methname="move" prflow="c2s" >
+      <param prtype="int" prname="toX" />
+      <param prtype="int" prname="toY" /> 	  
+    </method>
+
+    <!--moveNotify 可動物が動いたり出現したことの通知 -->
+    <method methname="moveNotify"  prflow="s2c" >
+      <param prtype="int" prname="movableID" />
+      <param prtype="MovableType" prname="typeID" /> <!-- MOVABLE_* -->
+      <param prtype="string" prname="name" prlength="100" />
+      <param prtype="int" prname="x" />
+      <param prtype="int" prname="y" />
+      <param prtype="int" prname="floorID" />
+    </method>
+
+    <!--disappearNotify 可動物が消えたことの通知 -->
+    <method methname="disappearNotify" prflow="s2c" >
+      <param prtype="int" prname="movableID" />
+    </method>
+
+	<!-- characterStatus 指定したIDのMovableの状態を取り出す。-->
+	<method methname="characterStatus" prflow="c2s" >
+	  <param prtype="int" prname="movableID"/>  
+	</method>
+	
+    <!--characterStatusResult 結果を返す. IDが存在しないなら何も返らない -->
+    <method methname="characterStatusResult"  prflow="s2c" >
+	  <param prtype="int" prname="movableID"/>  
+      <param prtype="CharacterStatus" prname="charstat" />
+    </method>
+
+    <!--useSkill スキルを使う -->
+    <method methname="useSkill"  prflow="c2s" >
+      <param prtype="int" prname="skillID" />
+    </method>
+    <!--useSkillNotify 使った結果を他のプレイヤーにも知らせる -->
+    <method methname="useSkillResult" prflow="s2c" >
+      <param prtype="int" prname="movableID" />
+      <param prtype="int" prname="skillID" />	  
+    </method>
+
+    <!--attack 敵を攻撃する -->
+    <method methname="attack" prflow="c2s" >
+      <param prtype="int" prname="movableID" />
+    </method>
+	
+    <!--attackNotify 他のプレイヤーに、敵を攻撃したことを通知する-->
+    <method methname="attackNotify" prflow="s2c" >
+      <param prtype="int" prname="attackerMovableID" />
+      <param prtype="int" prname="attackedMovableID" />
+	  <param prtype="int" prname="damage" />
+    </method>
+
+    <!--itemNotify -->
+	<struct strctname="CharacterItem">
+	  <member mbtype="dword" mbname="slotID" />
+	  <member mbtype="dword" mbname="typeID" />	  
+	  <member mbtype="dword" mbname="num" />
+	</struct>
+
+	<!-- item : 現在のアイテムの状態を要求する -->
+    <method methname="item" prflow="c2s" >
+	</method>
+	<!-- 要求することもあるが勝手にプッシュされてくることがあるものはnotify -->
+    <method methname="itemNotify" prflow="s2c" >
+      <param prtype="CharacterItem" prname="data" prlength="100" prvariable="true" />
+    </method>
+
+    <!--equip 所持品を装備する -->
+    <method methname="equip" prflow="c2s" >
+      <param prtype="int" prname="slotID" />
+    </method>
+    <!--equipResult 装備した結果を返す-->
+    <method methname="equipResult" prflow="s2c" >
+      <param prtype="int" prname="resultCode" />	<!-- SUCCESS/FAIL --->
+      <param prtype="int" prname="movableID" />
+      <param prtype="int" prname="itemType" />	  <!-- 装備したものの種類 -->
+    </method>
+
+	
+    <!--landscape 範囲内の地形データを取得する -->
+    <method methname="landscape" prflow="c2s" >
+	  <param prtype="int" prname="floorID" />
+      <param prtype="int" prname="x1" />
+      <param prtype="int" prname="y1" />
+      <param prtype="int" prname="x2" /> <!-- 端を含まない -->
+      <param prtype="int" prname="y2" />	  
+    </method>
+	
+    <!--landscapeResult -->
+    <method methname="landscapeResult" prflow="s2c" >
+	  <param prtype="int" prname="floorID" />	  
+      <param prtype="int" prname="x1" />
+      <param prtype="int" prname="y1" />
+      <param prtype="int" prname="x2" />
+      <param prtype="int" prname="y2" />	  	  
+      <param prtype="TileType" prname="data" prlength="1024" prvariable="true" />
+    </method>
+	
+    <!--useItem アイテムを使う-->
+    <method methname="useItem" prflow="c2s" >
+      <param prtype="int" prname="slotID"/>
+    </method>
+    <!--useItemNotify アイテムを使ったことを他のプレイヤーに通知 -->
+    <method methname="useItemNotify" prflow="s2c" >
+      <param prtype="int" prname="resultCode"/>	   <!-- SUCCESS/FAIL -->
+      <param prtype="int" prname="itemUserMovableID"/>
+      <param prtype="int" prname="itemType"/>
+    </method>
+
+    <!-- そのＮＰＣがshopだったときはshop_r, shopitem_r -->
+    <method methname="shopNotify" prflow="s2c" >
+      <param prtype="int" prname="shopMovableID" /> <!-- 店の NPCのID -->
+    </method>
+    <!--shopItemNotify 店で売っている商品の情報を通知する -->
+    <method methname="shopItemNotify" prflow="s2c" >
+      <param prtype="int" prname="shopMovableID" />
+      <param prtype="int" prname="itemType" />
+      <param prtype="int" prname="price" />
+    </method>
+    <!--buy 店で売っている商品を買う
+		additem_r(正常)またはbuy_r(異常)が返る。
+        additem_rの後に、shopitem_rで店のリストをもういちど送る。
+      -->
+    <method methname="buy" prflow="c2s" >
+      <param prtype="int" prname="shopMovableID"/>
+      <param prtype="int" prname="shopSlotID" />
+    </method>
+    <!--buyResult 購入結果 -->
+    <method methname="buyResult" prflow="s2c" >
+      <param prtype="int" prname="resultCode"/>
+    </method>
+    <!--sell 所持品を売る-->
+    <method methname="sell" prflow="c2s" >
+      <param prtype="int" prname="shopMovableID"/>
+      <param prtype="int" prname="shopSlotID" />
+    </method>
+    <!--sellResult 売った結果-->
+    <method methname="sellResult" prflow="s2c" >
+      <param prtype="int" prname="resultCode"/><!-- SUCCESS/FAIL -->
+    </method>
+
+
+  </protocol>
+</gen>
