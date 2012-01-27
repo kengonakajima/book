@@ -1,8 +1,9 @@
 『オンラインゲームを支える技術 -- 壮大なプレイ空間の舞台裏』<br>サンプルゲームレポジトリ
 ====
+<a href="http://gihyo.jp/book/2011/978-4-7741-4580-8">
 <img src="http://image.gihyo.co.jp/assets/images/cover/2011/9784774145808.jpg">
-<a href="http://gihyo.jp/book/2011/978-4-7741-4580-8"></img>
-[書籍情報ページ](http://gihyo.jp/book/2011/978-4-7741-4580-8)
+</img>書籍情報ページ</a>
+
 
 
 レポジトリの内容
