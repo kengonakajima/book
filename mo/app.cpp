@@ -101,10 +101,12 @@ App::App( int argc, char **argv )
     m_vceobj->SetSelectAlgorithmCallback(MySelectAlgorithmCallback);    
 
     if( isHost() ){
+        fprintf(stderr, "start host(server)\n" );
         // host, listen.
         m_listener = new GameListener();
         m_vceobj->Listen( m_listener, 29900 );
     } else {
+        fprintf(stderr, "start guest(client)\n" );        
         // guest, connect.
         m_jcli = new JClient();
         if( !m_vceobj->Connect( m_jcli, m_serverHost.c_str(), m_serverPort, 1000 ) ){
